@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Création de nouvelle page PDF en Landscapev1</title>
+  <title>Nouvelle Page PDF – Simulation sur 20 ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,7 +10,7 @@
       padding: 0;
     }
     header {
-      background-color: #003366; /* Exemple de couleur */
+      background-color: #003366;
       color: #fff;
       padding: 10px;
       text-align: center;
@@ -25,12 +25,13 @@
       width: 100%;
     }
     #pdf-content {
-      margin: 60px 20px 60px 20px; /* marge pour l'en-tête et le pied de page */
+      margin: 60px 20px 60px 20px; /* espace pour header et footer */
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      table-layout: fixed;
     }
     table, th, td {
       border: 1px solid #666;
@@ -38,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap; /* empêche le retour à la ligne entre le chiffre et le symbole € */
+      white-space: nowrap; /* pour garder les chiffres et le symbole € sur la même ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -55,7 +56,7 @@
   </style>
 </head>
 <body>
-  <!-- Zone de sélection du fichier PDF -->
+  <!-- Sélection du PDF -->
   <div id="file-container">
     <input type="file" id="pdf-selector" accept="application/pdf">
     <button id="process-pdf">Charger PDF et générer la nouvelle page</button>
@@ -67,7 +68,6 @@
       <h1>Garage Bauer</h1>
       <p>49 rue de Sarrelouis, Bouzonville</p>
     </header>
-
     <main>
       <table id="simulation-table">
         <thead>
@@ -75,18 +75,16 @@
             <th>Année</th>
             <th>Facture Sans PV</th>
             <th>Économies</th>
-            <th>Autoconso</th>
-            <th>Gains</th>
-            <th>Revente</th>
-            <th>Prime</th>
+            <th>Gains Revente</th>
+            <th>Prime (année 2)</th>
             <th>Facture Avec PV</th>
-            <th>Total Économies</th>
+            <th>Total économies</th>
             <th>Financement</th>
             <th>Cumul économies</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Exemple de lignes, à adapter selon vos données d'origine -->
+          <!-- Lignes pour les années 1 à 20 (les valeurs ci-dessous sont des exemples repris du PDF d'origine avec réorganisation) -->
           <tr>
             <td>1</td>
             <td>2925.15 €</td>
@@ -95,10 +93,8 @@
             <td>0.00 €</td>
             <td>897.10 €</td>
             <td>3097.55 €</td>
-            <td>3097.55 €</td>
-            <td>3097.55 €</td>
             <td></td>
-            <td>3097.55 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>2</td>
@@ -108,10 +104,8 @@
             <td>2850.00 €</td>
             <td>941.96 €</td>
             <td>6048.95 €</td>
-            <td>9146.50 €</td>
-            <td>9146.50 €</td>
             <td></td>
-            <td>9146.50 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>3</td>
@@ -121,10 +115,8 @@
             <td>0.00 €</td>
             <td>989.05 €</td>
             <td>3305.43 €</td>
-            <td>12451.93 €</td>
-            <td>12451.93 €</td>
             <td></td>
-            <td>12451.93 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>4</td>
@@ -134,10 +126,8 @@
             <td>0.00 €</td>
             <td>1038.51 €</td>
             <td>3417.22 €</td>
-            <td>15869.15 €</td>
-            <td>15869.15 €</td>
             <td></td>
-            <td>15869.15 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>5</td>
@@ -147,10 +137,8 @@
             <td>0.00 €</td>
             <td>1090.43 €</td>
             <td>3534.61 €</td>
-            <td>19403.76 €</td>
-            <td>19403.76 €</td>
             <td></td>
-            <td>19403.76 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>6</td>
@@ -160,10 +148,8 @@
             <td>0.00 €</td>
             <td>1144.95 €</td>
             <td>3657.86 €</td>
-            <td>23061.62 €</td>
-            <td>23061.62 €</td>
             <td></td>
-            <td>23061.62 €</td>
+            <td></td>
           </tr>
           <tr>
             <td>7</td>
@@ -173,15 +159,167 @@
             <td>0.00 €</td>
             <td>1202.20 €</td>
             <td>3787.28 €</td>
-            <td>26848.90 €</td>
-            <td>26848.90 €</td>
             <td></td>
-            <td>26848.90 €</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>4115.98 €</td>
+            <td>2853.67 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1262.31 €</td>
+            <td>3923.17 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>4321.78 €</td>
+            <td>2996.35 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1325.43 €</td>
+            <td>4065.85 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>4537.87 €</td>
+            <td>3146.17 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1391.70 €</td>
+            <td>4215.67 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>4764.76 €</td>
+            <td>3303.48 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1461.28 €</td>
+            <td>4372.98 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>5003.00 €</td>
+            <td>3468.65 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1534.35 €</td>
+            <td>4538.15 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>5253.15 €</td>
+            <td>3642.09 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1611.06 €</td>
+            <td>4711.59 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>5515.81 €</td>
+            <td>3824.19 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1691.62 €</td>
+            <td>4893.69 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>5791.60 €</td>
+            <td>4015.40 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1776.20 €</td>
+            <td>5084.90 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>6081.18 €</td>
+            <td>4216.17 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1865.01 €</td>
+            <td>5285.67 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td>6385.24 €</td>
+            <td>4426.98 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1958.26 €</td>
+            <td>5496.48 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td>6704.50 €</td>
+            <td>4648.33 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>2056.17 €</td>
+            <td>5717.83 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td>7039.72 €</td>
+            <td>4880.74 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>2158.98 €</td>
+            <td>5950.24 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>7391.71 €</td>
+            <td>5124.78 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>2266.93 €</td>
+            <td>6194.28 €</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <!-- Ligne des totaux -->
+          <tr>
+            <td>Totaux sur 20 ans</td>
+            <td>96722.88 €</td>
+            <td>67059.41 €</td>
+            <td>21390.00 €</td>
+            <td>2850.00 €</td>
+            <td>29663.47 €</td>
+            <td>91299.41 €</td>
+            <td>35976.00 €</td>
+            <td>55323.41 €</td>
           </tr>
         </tbody>
       </table>
     </main>
-
     <footer>
       <p>Document non contractuel – Page générée automatiquement</p>
     </footer>
@@ -196,7 +334,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    // Lorsque l'utilisateur clique sur le bouton pour traiter le PDF
     document.getElementById("process-pdf").addEventListener("click", function() {
       const fileInput = document.getElementById("pdf-selector");
       if (fileInput.files.length === 0) {
@@ -213,7 +350,7 @@
             page.getTextContent().then(function(textContent) {
               const textItems = textContent.items.map(item => item.str);
               const fullText = textItems.join(" ");
-              // Recherche d'un motif tel que "Coût de l'installation : 27200 €"
+              // On recherche un motif du type "Coût de l'installation : 27200 €"
               const regex = /Coût de l'installation\s*:\s*([\d\s,.]+)\s*€/i;
               const match = fullText.match(regex);
               let installationCost = 0;
@@ -223,19 +360,32 @@
                 alert("Impossible de trouver le coût de l'installation dans le PDF.");
                 return;
               }
-              // Calcul du financement
-              const financingCalculated = (installationCost * 1.837 / 100 * 12).toFixed(2) + " €";
+              // Calcul du financement (affiché pour les 6 premières années)
+              const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
               
-              // Mise à jour de la colonne "Financement" pour les 6 premières lignes
+              // Mise à jour des lignes du tableau (hors ligne de totaux)
               const tbody = document.querySelector("#simulation-table tbody");
-              for (let i = 0; i < tbody.rows.length; i++) {
+              // On considère les 20 premières lignes comme les années (index 0 à 19)
+              for (let i = 0; i < 20; i++) {
+                const row = tbody.rows[i];
+                // Pour les 6 premières années, on affiche le financement calculé, sinon on laisse vide (ou "0.00 €")
                 if (i < 6) {
-                  tbody.rows[i].cells[9].textContent = financingCalculated;
+                  row.cells[7].textContent = financementValue + " €";
                 } else {
-                  tbody.rows[i].cells[9].textContent = "";
+                  row.cells[7].textContent = "";
                 }
+                // Pour chaque ligne, on calcule le cumul économies :
+                // On récupère la valeur de "Total économies" (colonne 7, index 6) et on soustrait le financement (s'il existe)
+                const totalEconomiesText = row.cells[6].textContent.replace("€", "").trim();
+                const totalEconomies = parseFloat(totalEconomiesText.replace(',', '.')) || 0;
+                const financementNum = (i < 6) ? parseFloat(financementValue) : 0;
+                const cumul = (totalEconomies - financementNum).toFixed(2);
+                row.cells[8].textContent = cumul + " €";
               }
-              // Afficher le contenu généré et le bouton de téléchargement
+              // (Optionnel) Vous pouvez recalculer les totaux en parcourant toutes les lignes et en mettant à jour la dernière ligne.
+              // Ici, la dernière ligne (index 20) est déjà remplie avec les totaux extraits du PDF d'origine.
+              
+              // Afficher le contenu et le bouton de téléchargement
               document.getElementById("pdf-content").style.display = "block";
               document.getElementById("download-pdf").style.display = "inline-block";
             });
@@ -248,7 +398,7 @@
       fileReader.readAsArrayBuffer(file);
     });
 
-    // Lorsque l'utilisateur clique sur le bouton pour télécharger le PDF
+    // Génération du PDF en mode paysage
     document.getElementById("download-pdf").addEventListener("click", function () {
       const opt = {
         margin:       0.5,
