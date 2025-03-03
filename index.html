@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Nouvelle Page PDF</title>
+  <!-- Vous pouvez ajouter ici vos liens vers des feuilles de style externes si besoin -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    /* En-tête identique à la page1 */
+    header {
+      background-color: #003366; /* Exemple de couleur */
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+    /* Pied de page identique à la page1 */
+    footer {
+      background-color: #003366;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    /* Zone de contenu */
+    #pdf-content {
+      margin: 60px 20px 60px 20px; /* marge pour laisser place à l’en-tête et au pied de page */
+    }
+    /* Style de la table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #666;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    /* Bouton de téléchargement */
+    #download-pdf {
+      margin: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenu à convertir en PDF -->
+  <div id="pdf-content">
+    <!-- En-tête (identique à la page1) -->
+    <header>
+      <h1>Garage Bauer</h1>
+      <p>49 rue de Sarrelouis, Bouzonville</p>
+    </header>
+
+    <!-- Tableau avec modification de colonnes -->
+    <main>
+      <table id="simulation-table">
+        <thead>
+          <tr>
+            <th>Année</th>
+            <th>Facture Sans PV</th>
+            <th>Économies</th>
+            <th>Autoconso</th>
+            <th>Gains</th>
+            <th>Revente</th>
+            <th>Prime</th>
+            <th>Facture Avec PV</th>
+            <th>Total Économies</th>
+            <th>Financement</th>
+            <th>Cumul économies</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Exemple de lignes. Adaptez ces données en fonction de votre tableau d'origine -->
+          <tr>
+            <td>1</td>
+            <td>2925.15 €</td>
+            <td>2028.05 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>897.10 €</td>
+            <td>3097.55 €</td>
+            <td>3097.55 €</td>
+            <td>3097.55 €</td>
+            <td></td>
+            <td>3097.55 €</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>3071.41 €</td>
+            <td>2129.45 €</td>
+            <td>1069.50 €</td>
+            <td>2850.00 €</td>
+            <td>941.96 €</td>
+            <td>6048.95 €</td>
+            <td>9146.50 €</td>
+            <td>9146.50 €</td>
+            <td></td>
+            <td>9146.50 €</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>3224.98 €</td>
+            <td>2235.93 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>989.05 €</td>
+            <td>3305.43 €</td>
+            <td>12451.93 €</td>
+            <td>12451.93 €</td>
+            <td></td>
+            <td>12451.93 €</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>3386.23 €</td>
+            <td>2347.72 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1038.51 €</td>
+            <td>3417.22 €</td>
+            <td>15869.15 €</td>
+            <td>15869.15 €</td>
+            <td></td>
+            <td>15869.15 €</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>3555.54 €</td>
+            <td>2465.11 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1090.43 €</td>
+            <td>3534.61 €</td>
+            <td>19403.76 €</td>
+            <td>19403.76 €</td>
+            <td></td>
+            <td>19403.76 €</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>3733.32 €</td>
+            <td>2588.36 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1144.95 €</td>
+            <td>3657.86 €</td>
+            <td>23061.62 €</td>
+            <td>23061.62 €</td>
+            <td></td>
+            <td>23061.62 €</td>
+          </tr>
+          <!-- Les lignes suivantes ne comporteront pas de financement -->
+          <tr>
+            <td>7</td>
+            <td>3919.98 €</td>
+            <td>2717.78 €</td>
+            <td>1069.50 €</td>
+            <td>0.00 €</td>
+            <td>1202.20 €</td>
+            <td>3787.28 €</td>
+            <td>26848.90 €</td>
+            <td>26848.90 €</td>
+            <td></td>
+            <td>26848.90 €</td>
+          </tr>
+          <!-- … autres lignes si nécessaire -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- Pied de page (identique à la page1) -->
+    <footer>
+      <p>Document non contractuel – Page générée automatiquement</p>
+    </footer>
+  </div>
+
+  <!-- Bouton pour générer le PDF -->
+  <div style="text-align: center;">
+    <button id="download-pdf">Télécharger PDF</button>
+  </div>
+
+  <!-- Inclusion de la librairie html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Valeur du Coût de l'installation (extrait de la page2)
+      const installationCost = 27200; // en €
+      // Calcul de financement selon la formule
+      const financingCalculated = (installationCost * 1.837 / 100 * 12).toFixed(2) + " €";
+      
+      // Récupération du tableau
+      const tbody = document.querySelector("#simulation-table tbody");
+      // Pour chaque ligne du tableau, pour les 6 premières années, on insère la valeur de financement dans la 10ème colonne (index 9)
+      for (let i = 0; i < tbody.rows.length; i++) {
+        // Si on est dans les 6 premières lignes, on affiche le financement calculé, sinon on laisse vide
+        if (i < 6) {
+          tbody.rows[i].cells[9].textContent = financingCalculated;
+        } else {
+          tbody.rows[i].cells[9].textContent = "";
+        }
+      }
+      
+      // Génération du PDF lors du clic sur le bouton
+      document.getElementById("download-pdf").addEventListener("click", function () {
+        // Options pour html2pdf
+        const opt = {
+          margin:       0.5,
+          filename:     'nouvelle_page.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        const element = document.getElementById("pdf-content");
+        html2pdf().set(opt).from(element).save();
+      });
+    });
+  </script>
+</body>
+</html>
