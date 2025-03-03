@@ -2,22 +2,19 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Nouvelle Page PDF</title>
-  <!-- Vous pouvez ajouter ici vos liens vers des feuilles de style externes si besoin -->
+  <title>Création de nouvelle page PDF en Landscapev1</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
-    /* En-tête identique à la page1 */
     header {
       background-color: #003366; /* Exemple de couleur */
       color: #fff;
       padding: 10px;
       text-align: center;
     }
-    /* Pied de page identique à la page1 */
     footer {
       background-color: #003366;
       color: #fff;
@@ -27,11 +24,9 @@
       bottom: 0;
       width: 100%;
     }
-    /* Zone de contenu */
     #pdf-content {
-      margin: 60px 20px 60px 20px; /* marge pour laisser place à l’en-tête et au pied de page */
+      margin: 60px 20px 60px 20px; /* marge pour l'en-tête et le pied de page */
     }
-    /* Style de la table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -43,28 +38,36 @@
     th, td {
       padding: 8px;
       text-align: center;
+      white-space: nowrap; /* empêche le retour à la ligne entre le chiffre et le symbole € */
     }
     th {
       background-color: #f2f2f2;
     }
-    /* Bouton de téléchargement */
-    #download-pdf {
+    #download-pdf, #process-pdf {
       margin: 20px;
       padding: 10px 20px;
       font-size: 16px;
     }
+    #file-container {
+      text-align: center;
+      margin: 20px;
+    }
   </style>
 </head>
 <body>
-  <!-- Contenu à convertir en PDF -->
-  <div id="pdf-content">
-    <!-- En-tête (identique à la page1) -->
+  <!-- Zone de sélection du fichier PDF -->
+  <div id="file-container">
+    <input type="file" id="pdf-selector" accept="application/pdf">
+    <button id="process-pdf">Charger PDF et générer la nouvelle page</button>
+  </div>
+
+  <!-- Contenu qui sera converti en PDF -->
+  <div id="pdf-content" style="display:none;">
     <header>
       <h1>Garage Bauer</h1>
       <p>49 rue de Sarrelouis, Bouzonville</p>
     </header>
 
-    <!-- Tableau avec modification de colonnes -->
     <main>
       <table id="simulation-table">
         <thead>
@@ -83,7 +86,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Exemple de lignes. Adaptez ces données en fonction de votre tableau d'origine -->
+          <!-- Exemple de lignes, à adapter selon vos données d'origine -->
           <tr>
             <td>1</td>
             <td>2925.15 €</td>
@@ -162,7 +165,6 @@
             <td></td>
             <td>23061.62 €</td>
           </tr>
-          <!-- Les lignes suivantes ne comporteront pas de financement -->
           <tr>
             <td>7</td>
             <td>3919.98 €</td>
@@ -176,56 +178,87 @@
             <td></td>
             <td>26848.90 €</td>
           </tr>
-          <!-- … autres lignes si nécessaire -->
         </tbody>
       </table>
     </main>
 
-    <!-- Pied de page (identique à la page1) -->
     <footer>
       <p>Document non contractuel – Page générée automatiquement</p>
     </footer>
   </div>
 
-  <!-- Bouton pour générer le PDF -->
+  <!-- Bouton pour télécharger le PDF généré -->
   <div style="text-align: center;">
-    <button id="download-pdf">Télécharger PDF</button>
+    <button id="download-pdf" style="display:none;">Télécharger PDF</button>
   </div>
 
-  <!-- Inclusion de la librairie html2pdf.js -->
+  <!-- Inclusion des librairies html2pdf.js et PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Valeur du Coût de l'installation (extrait de la page2)
-      const installationCost = 27200; // en €
-      // Calcul de financement selon la formule
-      const financingCalculated = (installationCost * 1.837 / 100 * 12).toFixed(2) + " €";
-      
-      // Récupération du tableau
-      const tbody = document.querySelector("#simulation-table tbody");
-      // Pour chaque ligne du tableau, pour les 6 premières années, on insère la valeur de financement dans la 10ème colonne (index 9)
-      for (let i = 0; i < tbody.rows.length; i++) {
-        // Si on est dans les 6 premières lignes, on affiche le financement calculé, sinon on laisse vide
-        if (i < 6) {
-          tbody.rows[i].cells[9].textContent = financingCalculated;
-        } else {
-          tbody.rows[i].cells[9].textContent = "";
-        }
+    // Lorsque l'utilisateur clique sur le bouton pour traiter le PDF
+    document.getElementById("process-pdf").addEventListener("click", function() {
+      const fileInput = document.getElementById("pdf-selector");
+      if (fileInput.files.length === 0) {
+        alert("Veuillez sélectionner un fichier PDF.");
+        return;
       }
-      
-      // Génération du PDF lors du clic sur le bouton
-      document.getElementById("download-pdf").addEventListener("click", function () {
-        // Options pour html2pdf
-        const opt = {
-          margin:       0.5,
-          filename:     'nouvelle_page.pdf',
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2 },
-          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        const element = document.getElementById("pdf-content");
-        html2pdf().set(opt).from(element).save();
-      });
+      const file = fileInput.files[0];
+      const fileReader = new FileReader();
+      fileReader.onload = function() {
+        const typedarray = new Uint8Array(this.result);
+        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+          // Extraction du coût de l'installation à partir de la page 2
+          pdf.getPage(2).then(function(page) {
+            page.getTextContent().then(function(textContent) {
+              const textItems = textContent.items.map(item => item.str);
+              const fullText = textItems.join(" ");
+              // Recherche d'un motif tel que "Coût de l'installation : 27200 €"
+              const regex = /Coût de l'installation\s*:\s*([\d\s,.]+)\s*€/i;
+              const match = fullText.match(regex);
+              let installationCost = 0;
+              if (match && match[1]) {
+                installationCost = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'));
+              } else {
+                alert("Impossible de trouver le coût de l'installation dans le PDF.");
+                return;
+              }
+              // Calcul du financement
+              const financingCalculated = (installationCost * 1.837 / 100 * 12).toFixed(2) + " €";
+              
+              // Mise à jour de la colonne "Financement" pour les 6 premières lignes
+              const tbody = document.querySelector("#simulation-table tbody");
+              for (let i = 0; i < tbody.rows.length; i++) {
+                if (i < 6) {
+                  tbody.rows[i].cells[9].textContent = financingCalculated;
+                } else {
+                  tbody.rows[i].cells[9].textContent = "";
+                }
+              }
+              // Afficher le contenu généré et le bouton de téléchargement
+              document.getElementById("pdf-content").style.display = "block";
+              document.getElementById("download-pdf").style.display = "inline-block";
+            });
+          });
+        }).catch(function(error) {
+          console.error("Erreur lors du chargement du PDF : ", error);
+          alert("Erreur lors du chargement du PDF.");
+        });
+      };
+      fileReader.readAsArrayBuffer(file);
+    });
+
+    // Lorsque l'utilisateur clique sur le bouton pour télécharger le PDF
+    document.getElementById("download-pdf").addEventListener("click", function () {
+      const opt = {
+        margin:       0.5,
+        filename:     'nouvelle_page_landscape.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+      };
+      const element = document.getElementById("pdf-content");
+      html2pdf().set(opt).from(element).save();
     });
   </script>
 </body>
