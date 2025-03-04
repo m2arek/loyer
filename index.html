@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title> PDF –  20 ans</title>
+  <title> ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,7 +25,7 @@
       width: 100%;
     }
     #pdf-content {
-      margin: 60px 20px 60px 20px; /* espace pour header et footer */
+      margin: 60px 20px 60px 20px;
     }
     table {
       width: 100%;
@@ -39,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap; /* Pour garder chiffres et € sur une même ligne */
+      white-space: nowrap;
     }
     th {
       background-color: #f2f2f2;
@@ -65,7 +65,7 @@
   <!-- Contenu généré qui sera converti en PDF (initialement caché) -->
   <div id="pdf-content" style="display:none;">
     <header>
-      <!-- Ces valeurs seront mises à jour avec le nom et l’adresse extraits de la page1 -->
+      <!-- Ces valeurs seront mises à jour avec le nom et l'adresse extraits -->
       <h1>Nom du client</h1>
       <p>Adresse du client</p>
     </header>
@@ -105,42 +105,51 @@
   <script>
     let pdfFilename = 'Plan de financement & nom du client.pdf'; // Valeur par défaut
 
-    // Fonction utilitaire pour nettoyer les tokens (ex: fusionner nombre et €)
+    // Fonction pour regrouper les items de texte par ligne (selon la coordonnée y)
+    function groupItemsByY(items, tolerance = 2) {
+      const lines = [];
+      items.forEach(item => {
+        // Utilisation de item.transform[5] qui correspond généralement à la coordonnée y
+        const y = item.transform[5];
+        let line = lines.find(l => Math.abs(l.y - y) < tolerance);
+        if (!line) {
+          line = { y: y, items: [] };
+          lines.push(line);
+        }
+        line.items.push(item);
+      });
+      // Trier les lignes par y décroissant (les lignes en haut d'abord)
+      lines.sort((a, b) => b.y - a.y);
+      // Pour chaque ligne, trier les items par x (transform[4])
+      return lines.map(line => {
+        line.items.sort((a, b) => a.transform[4] - b.transform[4]);
+        // Concaténer le texte de chaque item séparé par un espace
+        return line.items.map(it => it.str).join(" ").trim();
+      });
+    }
+
+    // Nettoyer les tokens pour fusionner nombre et symbole €
     function cleanTokens(tokens) {
       return tokens.map(t => t.replace(/\s*€\s*/, "€").trim());
     }
 
-    // Fonction pour reconstruire une ligne du tableau dans le nouvel ordre
-    // Ici, nous supposons que l'ordre original extrait (pour chaque ligne) est :
-    // [Année, Facture Sans PV, Économies, Autoconso, Gains, Prime, Facture Avec PV, Total économies, (optionnel Cumul economies)]
-    // Et nous voulons obtenir :
-    // [Année, Facture Sans PV, Économies, Gains Revente (issu d'Autoconso), Prime (année 2) (issu de Gains, inversion), Facture Avec PV (issu de Prime, inversion), Total économies, Financement, Cumul économies]
-    // Pour la ligne des totaux (commençant par "Totaux"), on ne calcule pas financement ni cumul.
+    // Réorganiser une ligne extraite dans le nouvel ordre souhaité.
+    // Ici, nous supposons que l'ordre extrait initialement est :
+    // [Année, Facture Sans PV, Économies, Autoconso, Gains, Prime, Facture Avec PV, Total économies, ...]
+    // et que nous voulons obtenir :
+    // [Année, Facture Sans PV, Économies, Gains Revente (issu d'Autoconso), Prime (année 2) (issu de Gains), Facture Avec PV (issu de Prime), Total économies, Financement, Cumul économies]
     function reassembleRow(tokens, financementValue, rowIndex) {
-      // Pour les lignes de données (non totaux), on suppose au moins 8 tokens
-      // Réorganiser en fonction de notre mapping :
-      // Note : Cette logique peut être adaptée selon la structure réelle du PDF.
+      // Si la ligne correspond aux totaux, on renvoie la ligne avec deux colonnes vides ajoutées
       if(tokens[0].toLowerCase().startsWith("totaux")) {
-        // Ligne totale : on renvoie les tokens tels quels et on ajoute deux colonnes vides
         return [...tokens, "", ""];
       } else {
-        // Nouvelle ligne
-        // Nouvelle répartition proposée :
-        // new[0] = tokens[0] : Année
-        // new[1] = tokens[1] : Facture Sans PV
-        // new[2] = tokens[2] : Économies
-        // new[3] = tokens[3] : Gains Revente (anciennement Autoconso)
-        // new[4] = tokens[4] : Prime (année 2) (issu de Gains, inversion)
-        // new[5] = tokens[5] : Facture Avec PV (issu de Prime, inversion) – ici on suppose que la colonne "Prime" et "Facture Avec PV" sont interverties
-        // new[6] = tokens[6] : Total économies (si présent, sinon tokens[7])
-        // On ignore d’éventuels tokens supplémentaires et on recalculera "Cumul économies"
+        // On attend au moins 7 tokens pour une ligne de données
+        // Vous devrez adapter cette logique en fonction de l'ordre exact dans votre PDF.
         let totalEconomies = tokens[6] || tokens[7] || "0€";
-        // Pour Financement et Cumul économies, on ne les calcule que pour les 20 premières années (rowIndex < 20)
         let financement = "";
         let cumul = "";
         if(rowIndex < 20) {
           financement = (rowIndex < 6) ? financementValue + "€" : "";
-          // Pour le cumul, si financement existe, on soustrait (on retire le symbole pour calculer)
           let totalNum = parseFloat(totalEconomies.replace("€", "").replace(",", "."));
           let financementNum = (rowIndex < 6) ? parseFloat(financementValue) : 0;
           cumul = ((totalNum - financementNum).toFixed(2)) + "€";
@@ -150,8 +159,8 @@
           tokens[1], // Facture Sans PV
           tokens[2], // Économies
           tokens[3], // Gains Revente (issu d'Autoconso)
-          tokens[4], // Prime (année 2) (issu de Gains, inversion)
-          tokens[5], // Facture Avec PV (issu de Prime, inversion)
+          tokens[4], // Prime (année 2) (issu de Gains)
+          tokens[5], // Facture Avec PV (issu de Prime)
           totalEconomies, // Total économies
           financement,    // Financement
           cumul           // Cumul économies
@@ -159,17 +168,16 @@
       }
     }
 
-    // Fonction pour créer dynamiquement le corps du tableau à partir des lignes extraites
+    // Construction dynamique du corps du tableau
     function buildTableBody(rowsArray, financementValue) {
       const tbody = document.querySelector("#simulation-table tbody");
-      tbody.innerHTML = ""; // vider d'éventuelles lignes existantes
+      tbody.innerHTML = ""; // vider le corps du tableau
       rowsArray.forEach((rowText, index) => {
-        // Nettoyer le texte : fusionner le nombre et le symbole €
+        // Fusionner nombre et symbole €
         rowText = rowText.replace(/(\d)\s*€/g, "$1€");
-        // Séparer par espaces
+        // Découper la ligne en tokens par espaces
         let tokens = rowText.split(/\s+/);
         tokens = cleanTokens(tokens);
-        // Si on a suffisamment de tokens (au moins 7 pour une ligne de données ou commence par Totaux)
         if(tokens.length >= 7 || tokens[0].toLowerCase().startsWith("totaux")) {
           const newRow = reassembleRow(tokens, financementValue, index);
           const tr = document.createElement("tr");
@@ -194,30 +202,25 @@
       fileReader.onload = function() {
         const typedarray = new Uint8Array(this.result);
         pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-          // On extrait d'abord les informations de la page 1 (client + tableau)
+          // Extraction de la page 1 pour les infos client et le tableau
           pdf.getPage(1).then(function(page1) {
             return page1.getTextContent().then(function(textContent) {
-              // Pour simplifier, on collecte toutes les chaînes non vides dans un tableau
-              const allTexts = textContent.items.map(item => item.str).filter(str => str.trim() !== "");
-              // Supposons que les deux premières chaînes correspondent au nom et à l’adresse du client
-              const clientName = allTexts[0] ? allTexts[0].trim() : "Nom du client";
-              const clientAddress = allTexts[1] ? allTexts[1].trim() : "Adresse du client";
-              // Mettre à jour l'en-tête
+              // Regrouper les items par ligne selon leur coordonnée y
+              const lines = groupItemsByY(textContent.items);
+              console.log("Lignes extraites de la page 1 :", lines);
+              // Les deux premières lignes sont supposées contenir le nom et l'adresse du client
+              const clientName = lines[0] ? lines[0].trim() : "Nom du client";
+              const clientAddress = lines[1] ? lines[1].trim() : "Adresse du client";
               document.querySelector("header h1").textContent = clientName;
               document.querySelector("header p").textContent = clientAddress;
-              // Construction du nom du fichier PDF
               pdfFilename = `Plan de financement & ${clientName}.pdf`;
-              
-              // Ensuite, on tente d'extraire les lignes du tableau.
-              // Ici, on recherche dans allTexts les lignes commençant par un chiffre (pour les années) ou "Totaux"
-              const tableRows = allTexts.filter(str => /^\d+/.test(str) || str.toLowerCase().startsWith("totaux"));
-              // Pour déboguer, vous pouvez afficher tableRows dans la console :
-              console.log("Lignes extraites du tableau :", tableRows);
-              
+              // Les lignes du tableau sont celles qui commencent par un chiffre ou par "Totaux"
+              const tableRows = lines.filter(str => /^\d/.test(str) || str.toLowerCase().startsWith("totaux"));
+              console.log("Lignes du tableau filtrées :", tableRows);
               return tableRows;
             });
           }).then(function(tableRows) {
-            // Parallèlement, on extrait le coût de l'installation depuis la page 2 pour le calcul du financement
+            // Extraction du coût de l'installation depuis la page 2
             pdf.getPage(2).then(function(page2) {
               page2.getTextContent().then(function(textContent2) {
                 const textItems2 = textContent2.items.map(item => item.str);
@@ -230,11 +233,9 @@
                 } else {
                   alert("Impossible de trouver le coût de l'installation dans le PDF (page 2).");
                 }
-                // Calcul du financement
                 const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
-                // Construire le tableau avec les lignes extraites et le financement
                 buildTableBody(tableRows, financementValue);
-                // Afficher le contenu généré et le bouton de téléchargement
+                // Afficher le contenu et le bouton de téléchargement
                 document.getElementById("pdf-content").style.display = "block";
                 document.getElementById("download-pdf").style.display = "inline-block";
               });
