@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Nouvelle Page PDF – Simulation sur 20 ans</title>
+  <title> PDF –  20 ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap; /* Pour garder chiffre et symbole € sur une ligne */
+      white-space: nowrap; /* Pour garder chiffres et € sur une même ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -56,16 +56,16 @@
   </style>
 </head>
 <body>
-  <!-- Zone de sélection du PDF -->
+  <!-- Sélection du PDF -->
   <div id="file-container">
     <input type="file" id="pdf-selector" accept="application/pdf">
     <button id="process-pdf">Charger PDF et générer la nouvelle page</button>
   </div>
 
-  <!-- Contenu qui sera converti en PDF -->
+  <!-- Contenu généré qui sera converti en PDF (initialement caché) -->
   <div id="pdf-content" style="display:none;">
     <header>
-      <!-- Ces valeurs seront mises à jour avec les infos extraites de la page 1 -->
+      <!-- Ces valeurs seront mises à jour avec le nom et l’adresse extraits de la page1 -->
       <h1>Nom du client</h1>
       <p>Adresse du client</p>
     </header>
@@ -85,239 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Lignes pour les années 1 à 20 (exemple de données, à adapter selon vos besoins) -->
-          <tr>
-            <td>1</td>
-            <td>2925.15 €</td>
-            <td>2028.05 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>897.10 €</td>
-            <td>3097.55 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>3071.41 €</td>
-            <td>2129.45 €</td>
-            <td>1069.50 €</td>
-            <td>2850.00 €</td>
-            <td>941.96 €</td>
-            <td>6048.95 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>3224.98 €</td>
-            <td>2235.93 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>989.05 €</td>
-            <td>3305.43 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>3386.23 €</td>
-            <td>2347.72 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1038.51 €</td>
-            <td>3417.22 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>3555.54 €</td>
-            <td>2465.11 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1090.43 €</td>
-            <td>3534.61 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>3733.32 €</td>
-            <td>2588.36 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1144.95 €</td>
-            <td>3657.86 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>3919.98 €</td>
-            <td>2717.78 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1202.20 €</td>
-            <td>3787.28 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>4115.98 €</td>
-            <td>2853.67 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1262.31 €</td>
-            <td>3923.17 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>4321.78 €</td>
-            <td>2996.35 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1325.43 €</td>
-            <td>4065.85 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td>4537.87 €</td>
-            <td>3146.17 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1391.70 €</td>
-            <td>4215.67 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td>4764.76 €</td>
-            <td>3303.48 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1461.28 €</td>
-            <td>4372.98 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>12</td>
-            <td>5003.00 €</td>
-            <td>3468.65 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1534.35 €</td>
-            <td>4538.15 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td>5253.15 €</td>
-            <td>3642.09 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1611.06 €</td>
-            <td>4711.59 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>14</td>
-            <td>5515.81 €</td>
-            <td>3824.19 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1691.62 €</td>
-            <td>4893.69 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>15</td>
-            <td>5791.60 €</td>
-            <td>4015.40 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1776.20 €</td>
-            <td>5084.90 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>16</td>
-            <td>6081.18 €</td>
-            <td>4216.17 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1865.01 €</td>
-            <td>5285.67 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>17</td>
-            <td>6385.24 €</td>
-            <td>4426.98 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>1958.26 €</td>
-            <td>5496.48 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>18</td>
-            <td>6704.50 €</td>
-            <td>4648.33 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>2056.17 €</td>
-            <td>5717.83 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>19</td>
-            <td>7039.72 €</td>
-            <td>4880.74 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>2158.98 €</td>
-            <td>5950.24 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td>7391.71 €</td>
-            <td>5124.78 €</td>
-            <td>1069.50 €</td>
-            <td>0.00 €</td>
-            <td>2266.93 €</td>
-            <td>6194.28 €</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <!-- Ligne des totaux -->
-          <tr>
-            <td>Totaux sur 20 ans</td>
-            <td>96722.88 €</td>
-            <td>67059.41 €</td>
-            <td>21390.00 €</td>
-            <td>2850.00 €</td>
-            <td>29663.47 €</td>
-            <td>91299.41 €</td>
-            <td>35976.00 €</td>
-            <td>55323.41 €</td>
-          </tr>
+          <!-- Les lignes seront générées dynamiquement -->
         </tbody>
       </table>
     </main>
@@ -326,7 +94,7 @@
     </footer>
   </div>
 
-  <!-- Bouton pour télécharger le PDF généré -->
+  <!-- Bouton de téléchargement (initialement caché) -->
   <div style="text-align: center;">
     <button id="download-pdf" style="display:none;">Télécharger PDF</button>
   </div>
@@ -335,7 +103,85 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    let pdfFilename = 'Plan de financement & nom du client.pdf'; // Valeur par défaut, mise à jour après extraction
+    let pdfFilename = 'Plan de financement & nom du client.pdf'; // Valeur par défaut
+
+    // Fonction utilitaire pour nettoyer les tokens (ex: fusionner nombre et €)
+    function cleanTokens(tokens) {
+      return tokens.map(t => t.replace(/\s*€\s*/, "€").trim());
+    }
+
+    // Fonction pour reconstruire une ligne du tableau dans le nouvel ordre
+    // Ici, nous supposons que l'ordre original extrait (pour chaque ligne) est :
+    // [Année, Facture Sans PV, Économies, Autoconso, Gains, Prime, Facture Avec PV, Total économies, (optionnel Cumul economies)]
+    // Et nous voulons obtenir :
+    // [Année, Facture Sans PV, Économies, Gains Revente (issu d'Autoconso), Prime (année 2) (issu de Gains, inversion), Facture Avec PV (issu de Prime, inversion), Total économies, Financement, Cumul économies]
+    // Pour la ligne des totaux (commençant par "Totaux"), on ne calcule pas financement ni cumul.
+    function reassembleRow(tokens, financementValue, rowIndex) {
+      // Pour les lignes de données (non totaux), on suppose au moins 8 tokens
+      // Réorganiser en fonction de notre mapping :
+      // Note : Cette logique peut être adaptée selon la structure réelle du PDF.
+      if(tokens[0].toLowerCase().startsWith("totaux")) {
+        // Ligne totale : on renvoie les tokens tels quels et on ajoute deux colonnes vides
+        return [...tokens, "", ""];
+      } else {
+        // Nouvelle ligne
+        // Nouvelle répartition proposée :
+        // new[0] = tokens[0] : Année
+        // new[1] = tokens[1] : Facture Sans PV
+        // new[2] = tokens[2] : Économies
+        // new[3] = tokens[3] : Gains Revente (anciennement Autoconso)
+        // new[4] = tokens[4] : Prime (année 2) (issu de Gains, inversion)
+        // new[5] = tokens[5] : Facture Avec PV (issu de Prime, inversion) – ici on suppose que la colonne "Prime" et "Facture Avec PV" sont interverties
+        // new[6] = tokens[6] : Total économies (si présent, sinon tokens[7])
+        // On ignore d’éventuels tokens supplémentaires et on recalculera "Cumul économies"
+        let totalEconomies = tokens[6] || tokens[7] || "0€";
+        // Pour Financement et Cumul économies, on ne les calcule que pour les 20 premières années (rowIndex < 20)
+        let financement = "";
+        let cumul = "";
+        if(rowIndex < 20) {
+          financement = (rowIndex < 6) ? financementValue + "€" : "";
+          // Pour le cumul, si financement existe, on soustrait (on retire le symbole pour calculer)
+          let totalNum = parseFloat(totalEconomies.replace("€", "").replace(",", "."));
+          let financementNum = (rowIndex < 6) ? parseFloat(financementValue) : 0;
+          cumul = ((totalNum - financementNum).toFixed(2)) + "€";
+        }
+        return [
+          tokens[0], // Année
+          tokens[1], // Facture Sans PV
+          tokens[2], // Économies
+          tokens[3], // Gains Revente (issu d'Autoconso)
+          tokens[4], // Prime (année 2) (issu de Gains, inversion)
+          tokens[5], // Facture Avec PV (issu de Prime, inversion)
+          totalEconomies, // Total économies
+          financement,    // Financement
+          cumul           // Cumul économies
+        ];
+      }
+    }
+
+    // Fonction pour créer dynamiquement le corps du tableau à partir des lignes extraites
+    function buildTableBody(rowsArray, financementValue) {
+      const tbody = document.querySelector("#simulation-table tbody");
+      tbody.innerHTML = ""; // vider d'éventuelles lignes existantes
+      rowsArray.forEach((rowText, index) => {
+        // Nettoyer le texte : fusionner le nombre et le symbole €
+        rowText = rowText.replace(/(\d)\s*€/g, "$1€");
+        // Séparer par espaces
+        let tokens = rowText.split(/\s+/);
+        tokens = cleanTokens(tokens);
+        // Si on a suffisamment de tokens (au moins 7 pour une ligne de données ou commence par Totaux)
+        if(tokens.length >= 7 || tokens[0].toLowerCase().startsWith("totaux")) {
+          const newRow = reassembleRow(tokens, financementValue, index);
+          const tr = document.createElement("tr");
+          newRow.forEach(cellText => {
+            const td = document.createElement("td");
+            td.textContent = cellText;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        }
+      });
+    }
 
     document.getElementById("process-pdf").addEventListener("click", function() {
       const fileInput = document.getElementById("pdf-selector");
@@ -348,63 +194,51 @@
       fileReader.onload = function() {
         const typedarray = new Uint8Array(this.result);
         pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-          // On extrait les informations de la page 1 et de la page 2 simultanément
-          Promise.all([
-            // Extraction des infos client depuis la page 1
-            pdf.getPage(1).then(function(page1) {
-              return page1.getTextContent().then(function(textContent) {
-                const textItems = textContent.items.map(item => item.str).filter(str => str.trim() !== "");
-                // Ici on suppose que les deux premières lignes contiennent le nom et l'adresse.
-                const clientName = textItems[0] ? textItems[0].trim() : "Nom du client";
-                const clientAddress = textItems[1] ? textItems[1].trim() : "Adresse du client";
-                return { clientName, clientAddress };
-              });
-            }),
-            // Extraction du coût de l'installation depuis la page 2
+          // On extrait d'abord les informations de la page 1 (client + tableau)
+          pdf.getPage(1).then(function(page1) {
+            return page1.getTextContent().then(function(textContent) {
+              // Pour simplifier, on collecte toutes les chaînes non vides dans un tableau
+              const allTexts = textContent.items.map(item => item.str).filter(str => str.trim() !== "");
+              // Supposons que les deux premières chaînes correspondent au nom et à l’adresse du client
+              const clientName = allTexts[0] ? allTexts[0].trim() : "Nom du client";
+              const clientAddress = allTexts[1] ? allTexts[1].trim() : "Adresse du client";
+              // Mettre à jour l'en-tête
+              document.querySelector("header h1").textContent = clientName;
+              document.querySelector("header p").textContent = clientAddress;
+              // Construction du nom du fichier PDF
+              pdfFilename = `Plan de financement & ${clientName}.pdf`;
+              
+              // Ensuite, on tente d'extraire les lignes du tableau.
+              // Ici, on recherche dans allTexts les lignes commençant par un chiffre (pour les années) ou "Totaux"
+              const tableRows = allTexts.filter(str => /^\d+/.test(str) || str.toLowerCase().startsWith("totaux"));
+              // Pour déboguer, vous pouvez afficher tableRows dans la console :
+              console.log("Lignes extraites du tableau :", tableRows);
+              
+              return tableRows;
+            });
+          }).then(function(tableRows) {
+            // Parallèlement, on extrait le coût de l'installation depuis la page 2 pour le calcul du financement
             pdf.getPage(2).then(function(page2) {
-              return page2.getTextContent().then(function(textContent) {
-                const textItems = textContent.items.map(item => item.str);
-                const fullText = textItems.join(" ");
+              page2.getTextContent().then(function(textContent2) {
+                const textItems2 = textContent2.items.map(item => item.str);
+                const fullText2 = textItems2.join(" ");
                 const regex = /Coût de l'installation\s*:\s*([\d\s,.]+)\s*€/i;
-                const match = fullText.match(regex);
+                const match = fullText2.match(regex);
                 let installationCost = 0;
                 if (match && match[1]) {
                   installationCost = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'));
                 } else {
-                  alert("Impossible de trouver le coût de l'installation dans le PDF.");
+                  alert("Impossible de trouver le coût de l'installation dans le PDF (page 2).");
                 }
-                return installationCost;
+                // Calcul du financement
+                const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
+                // Construire le tableau avec les lignes extraites et le financement
+                buildTableBody(tableRows, financementValue);
+                // Afficher le contenu généré et le bouton de téléchargement
+                document.getElementById("pdf-content").style.display = "block";
+                document.getElementById("download-pdf").style.display = "inline-block";
               });
-            })
-          ]).then(function([clientData, installationCost]) {
-            // Mise à jour de l'en-tête avec le nom et l'adresse extraits
-            document.querySelector("header h1").textContent = clientData.clientName;
-            document.querySelector("header p").textContent = clientData.clientAddress;
-            // Construction du nom du fichier PDF avec le nom du client
-            pdfFilename = `Plan de financement & ${clientData.clientName}.pdf`;
-
-            // Calcul du financement (affiché pour les 6 premières années)
-            const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
-            
-            // Mise à jour des lignes du tableau (20 années)
-            const tbody = document.querySelector("#simulation-table tbody");
-            for (let i = 0; i < 20; i++) {
-              const row = tbody.rows[i];
-              if (i < 6) {
-                row.cells[7].textContent = financementValue + " €";
-              } else {
-                row.cells[7].textContent = "";
-              }
-              // Calcul du cumul économies : Total économies - Financement (pour les 6 premières années)
-              const totalEconomiesText = row.cells[6].textContent.replace("€", "").trim();
-              const totalEconomies = parseFloat(totalEconomiesText.replace(',', '.')) || 0;
-              const financementNum = (i < 6) ? parseFloat(financementValue) : 0;
-              const cumul = (totalEconomies - financementNum).toFixed(2);
-              row.cells[8].textContent = cumul + " €";
-            }
-            // Afficher le contenu généré et le bouton de téléchargement
-            document.getElementById("pdf-content").style.display = "block";
-            document.getElementById("download-pdf").style.display = "inline-block";
+            });
           });
         }).catch(function(error) {
           console.error("Erreur lors du chargement du PDF : ", error);
@@ -414,7 +248,7 @@
       fileReader.readAsArrayBuffer(file);
     });
 
-    // Génération du PDF en mode paysage avec le nom de fichier personnalisé
+    // Génération et téléchargement du PDF en mode paysage
     document.getElementById("download-pdf").addEventListener("click", function () {
       const opt = {
         margin: 0.5,
