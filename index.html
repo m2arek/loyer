@@ -39,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap; /* pour garder les chiffres et le symbole € sur la même ligne */
+      white-space: nowrap; /* Pour garder chiffre et symbole € sur une ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -56,7 +56,7 @@
   </style>
 </head>
 <body>
-  <!-- Sélection du PDF -->
+  <!-- Zone de sélection du PDF -->
   <div id="file-container">
     <input type="file" id="pdf-selector" accept="application/pdf">
     <button id="process-pdf">Charger PDF et générer la nouvelle page</button>
@@ -65,8 +65,9 @@
   <!-- Contenu qui sera converti en PDF -->
   <div id="pdf-content" style="display:none;">
     <header>
-      <h1>Garage Bauer</h1>
-      <p>49 rue de Sarrelouis, Bouzonville</p>
+      <!-- Ces valeurs seront mises à jour avec les infos extraites de la page 1 -->
+      <h1>Nom du client</h1>
+      <p>Adresse du client</p>
     </header>
     <main>
       <table id="simulation-table">
@@ -84,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Lignes pour les années 1 à 20 (les valeurs ci-dessous sont des exemples repris du PDF d'origine avec réorganisation) -->
+          <!-- Lignes pour les années 1 à 20 (exemple de données, à adapter selon vos besoins) -->
           <tr>
             <td>1</td>
             <td>2925.15 €</td>
@@ -334,6 +335,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
+    let pdfFilename = 'Plan de financement & nom du client.pdf'; // Valeur par défaut, mise à jour après extraction
+
     document.getElementById("process-pdf").addEventListener("click", function() {
       const fileInput = document.getElementById("pdf-selector");
       if (fileInput.files.length === 0) {
@@ -345,50 +348,63 @@
       fileReader.onload = function() {
         const typedarray = new Uint8Array(this.result);
         pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-          // Extraction du coût de l'installation à partir de la page 2
-          pdf.getPage(2).then(function(page) {
-            page.getTextContent().then(function(textContent) {
-              const textItems = textContent.items.map(item => item.str);
-              const fullText = textItems.join(" ");
-              // On recherche un motif du type "Coût de l'installation : 27200 €"
-              const regex = /Coût de l'installation\s*:\s*([\d\s,.]+)\s*€/i;
-              const match = fullText.match(regex);
-              let installationCost = 0;
-              if (match && match[1]) {
-                installationCost = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'));
-              } else {
-                alert("Impossible de trouver le coût de l'installation dans le PDF.");
-                return;
-              }
-              // Calcul du financement (affiché pour les 6 premières années)
-              const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
-              
-              // Mise à jour des lignes du tableau (hors ligne de totaux)
-              const tbody = document.querySelector("#simulation-table tbody");
-              // On considère les 20 premières lignes comme les années (index 0 à 19)
-              for (let i = 0; i < 20; i++) {
-                const row = tbody.rows[i];
-                // Pour les 6 premières années, on affiche le financement calculé, sinon on laisse vide (ou "0.00 €")
-                if (i < 6) {
-                  row.cells[7].textContent = financementValue + " €";
+          // On extrait les informations de la page 1 et de la page 2 simultanément
+          Promise.all([
+            // Extraction des infos client depuis la page 1
+            pdf.getPage(1).then(function(page1) {
+              return page1.getTextContent().then(function(textContent) {
+                const textItems = textContent.items.map(item => item.str).filter(str => str.trim() !== "");
+                // Ici on suppose que les deux premières lignes contiennent le nom et l'adresse.
+                const clientName = textItems[0] ? textItems[0].trim() : "Nom du client";
+                const clientAddress = textItems[1] ? textItems[1].trim() : "Adresse du client";
+                return { clientName, clientAddress };
+              });
+            }),
+            // Extraction du coût de l'installation depuis la page 2
+            pdf.getPage(2).then(function(page2) {
+              return page2.getTextContent().then(function(textContent) {
+                const textItems = textContent.items.map(item => item.str);
+                const fullText = textItems.join(" ");
+                const regex = /Coût de l'installation\s*:\s*([\d\s,.]+)\s*€/i;
+                const match = fullText.match(regex);
+                let installationCost = 0;
+                if (match && match[1]) {
+                  installationCost = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'));
                 } else {
-                  row.cells[7].textContent = "";
+                  alert("Impossible de trouver le coût de l'installation dans le PDF.");
                 }
-                // Pour chaque ligne, on calcule le cumul économies :
-                // On récupère la valeur de "Total économies" (colonne 7, index 6) et on soustrait le financement (s'il existe)
-                const totalEconomiesText = row.cells[6].textContent.replace("€", "").trim();
-                const totalEconomies = parseFloat(totalEconomiesText.replace(',', '.')) || 0;
-                const financementNum = (i < 6) ? parseFloat(financementValue) : 0;
-                const cumul = (totalEconomies - financementNum).toFixed(2);
-                row.cells[8].textContent = cumul + " €";
+                return installationCost;
+              });
+            })
+          ]).then(function([clientData, installationCost]) {
+            // Mise à jour de l'en-tête avec le nom et l'adresse extraits
+            document.querySelector("header h1").textContent = clientData.clientName;
+            document.querySelector("header p").textContent = clientData.clientAddress;
+            // Construction du nom du fichier PDF avec le nom du client
+            pdfFilename = `Plan de financement & ${clientData.clientName}.pdf`;
+
+            // Calcul du financement (affiché pour les 6 premières années)
+            const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
+            
+            // Mise à jour des lignes du tableau (20 années)
+            const tbody = document.querySelector("#simulation-table tbody");
+            for (let i = 0; i < 20; i++) {
+              const row = tbody.rows[i];
+              if (i < 6) {
+                row.cells[7].textContent = financementValue + " €";
+              } else {
+                row.cells[7].textContent = "";
               }
-              // (Optionnel) Vous pouvez recalculer les totaux en parcourant toutes les lignes et en mettant à jour la dernière ligne.
-              // Ici, la dernière ligne (index 20) est déjà remplie avec les totaux extraits du PDF d'origine.
-              
-              // Afficher le contenu et le bouton de téléchargement
-              document.getElementById("pdf-content").style.display = "block";
-              document.getElementById("download-pdf").style.display = "inline-block";
-            });
+              // Calcul du cumul économies : Total économies - Financement (pour les 6 premières années)
+              const totalEconomiesText = row.cells[6].textContent.replace("€", "").trim();
+              const totalEconomies = parseFloat(totalEconomiesText.replace(',', '.')) || 0;
+              const financementNum = (i < 6) ? parseFloat(financementValue) : 0;
+              const cumul = (totalEconomies - financementNum).toFixed(2);
+              row.cells[8].textContent = cumul + " €";
+            }
+            // Afficher le contenu généré et le bouton de téléchargement
+            document.getElementById("pdf-content").style.display = "block";
+            document.getElementById("download-pdf").style.display = "inline-block";
           });
         }).catch(function(error) {
           console.error("Erreur lors du chargement du PDF : ", error);
@@ -398,14 +414,14 @@
       fileReader.readAsArrayBuffer(file);
     });
 
-    // Génération du PDF en mode paysage
+    // Génération du PDF en mode paysage avec le nom de fichier personnalisé
     document.getElementById("download-pdf").addEventListener("click", function () {
       const opt = {
-        margin:       0.5,
-        filename:     'nouvelle_page_landscape.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+        margin: 0.5,
+        filename: pdfFilename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
       };
       const element = document.getElementById("pdf-content");
       html2pdf().set(opt).from(element).save();
