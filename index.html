@@ -2,12 +2,17 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>– Simulation sur 20 ans</title>
+  <title>Nouvelle Page PDF – Simulation sur 20 ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+    }
+    /* Réduction de la taille de police pour faire tenir le contenu sur une seule page */
+    #pdf-content {
+      font-size: 10px;
+      margin: 60px 20px 60px 20px; /* espace pour header et footer */
     }
     header {
       background-color: #003366;
@@ -24,9 +29,6 @@
       bottom: 0;
       width: 100%;
     }
-    #pdf-content {
-      margin: 60px 20px 60px 20px; /* espace pour header et footer */
-    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -37,9 +39,9 @@
       border: 1px solid #666;
     }
     th, td {
-      padding: 8px;
+      padding: 6px; /* réduction des padding */
       text-align: center;
-      white-space: nowrap; /* Pour garder chiffres et € sur une même ligne */
+      white-space: nowrap; /* Pour garder chiffres et € sur une seule ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -105,7 +107,7 @@
   <script>
     let pdfFilename = 'Plan de financement & nom du client.pdf'; // Valeur par défaut
 
-    // Fonction pour regrouper les items de texte par ligne (selon la coordonnée y)
+    // Regrouper les items de texte par ligne selon leur coordonnée Y
     function groupItemsByY(items, tolerance = 2) {
       const lines = [];
       items.forEach(item => {
@@ -125,35 +127,30 @@
       });
     }
 
-    // Fonction pour nettoyer les tokens en fusionnant le nombre et le symbole €
+    // Nettoyer les tokens (fusionner nombre et symbole €)
     function cleanTokens(tokens) {
       return tokens.map(t => t.replace(/\s*€\s*/, "€").trim());
     }
 
-    // Fonction pour réassembler une ligne en réordonnant les colonnes selon le nouvel ordre.
-    // Pour la ligne Totaux, si la dernière colonne (cumul économies) est absente, on la fixe en utilisant Total économies.
+    // Réassembler une ligne extraite dans le nouvel ordre souhaité.
+    // Pour la ligne Totaux, on force la première cellule à "Totaux" et,
+    // si le cumul économies manque, on l'ajoute en utilisant la valeur de Total économies.
     function reassembleRow(tokens, financementValue, rowIndex) {
       if(tokens[0].toLowerCase().includes("totaux")) {
         tokens[0] = "Totaux";
-        // Si on a déjà au moins 9 tokens, on prend les 9 premières
         if(tokens.length >= 9) {
           return tokens.slice(0, 9);
         } else {
-          // Sinon, on ajoute la colonne manquante : on utilise Total économies comme valeur pour Cumul économies
           let totalEconomies = tokens[6] || "0€";
           return [...tokens, "", totalEconomies];
         }
       } else {
-        // Ligne de données normale
         let totalEconomies = tokens[6] || tokens[7] || "0€";
-        let financement = "";
-        let cumul = "";
-        if(rowIndex < 20) {
-          financement = (rowIndex < 6) ? financementValue + "€" : "";
-          let totalNum = parseFloat(totalEconomies.replace("€", "").replace(",", "."));
-          let financementNum = (rowIndex < 6) ? parseFloat(financementValue) : 0;
-          cumul = ((totalNum - financementNum).toFixed(2)) + "€";
-        }
+        let financement = (rowIndex < 6) ? financementValue + "€" : "";
+        let totalNum = parseFloat(totalEconomies.replace("€", "").replace(",", "."));
+        let financementNum = (rowIndex < 6) ? parseFloat(financementValue) : 0;
+        // Pour les 6 premières lignes, cumul = totalEconomies - financement, sinon cumul = totalEconomies (formaté en nombre à 2 décimales)
+        let cumul = (rowIndex < 6 ? (totalNum - financementNum).toFixed(2) : totalNum.toFixed(2)) + "€";
         return [
           tokens[0], // Année
           tokens[1], // Facture Sans PV
@@ -168,17 +165,17 @@
       }
     }
 
-    // Fonction pour construire dynamiquement le corps du tableau
+    // Construire dynamiquement le corps du tableau à partir des lignes extraites
     function buildTableBody(rowsArray, financementValue) {
       const tbody = document.querySelector("#simulation-table tbody");
       tbody.innerHTML = ""; // Vider le corps du tableau
       rowsArray.forEach((rowText, index) => {
         // Fusionner nombre et symbole €
         rowText = rowText.replace(/(\d)\s*€/g, "$1€");
-        // Découper la ligne en tokens par espaces
+        // Découper la ligne en tokens
         let tokens = rowText.split(/\s+/);
         tokens = cleanTokens(tokens);
-        // On considère une ligne valide si elle a au moins 7 tokens ou contient "totaux"
+        // Considérer la ligne comme valide si elle contient au moins 7 tokens ou si elle correspond à Totaux
         if(tokens.length >= 7 || tokens[0].toLowerCase().includes("totaux")) {
           const newRow = reassembleRow(tokens, financementValue, index);
           const tr = document.createElement("tr");
@@ -203,24 +200,24 @@
       fileReader.onload = function() {
         const typedarray = new Uint8Array(this.result);
         pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-          // Extraction de la page 1 pour les infos client et le tableau
+          // Extraction de la page 1 pour obtenir infos client et lignes de tableau
           pdf.getPage(1).then(function(page1) {
             return page1.getTextContent().then(function(textContent) {
               const lines = groupItemsByY(textContent.items);
               console.log("Lignes extraites de la page 1 :", lines);
-              // Les deux premières lignes servent pour le nom et l'adresse du client
+              // Les deux premières lignes pour le nom et l'adresse du client
               const clientName = lines[0] ? lines[0].trim() : "Nom du client";
               const clientAddress = lines[1] ? lines[1].trim() : "Adresse du client";
               document.querySelector("header h1").textContent = clientName;
               document.querySelector("header p").textContent = clientAddress;
               pdfFilename = `Plan de financement & ${clientName}.pdf`;
-              // Filtrer les lignes du tableau : celles qui commencent par un chiffre ou contiennent "totaux"
+              // Filtrer les lignes du tableau : celles commençant par un chiffre ou contenant "totaux"
               const tableRows = lines.filter(str => /^\d/.test(str) || str.toLowerCase().includes("totaux"));
               console.log("Lignes du tableau filtrées :", tableRows);
               return tableRows;
             });
           }).then(function(tableRows) {
-            // Extraction du coût de l'installation depuis la page 2
+            // Extraction du coût de l'installation depuis la page 2 pour le financement
             pdf.getPage(2).then(function(page2) {
               page2.getTextContent().then(function(textContent2) {
                 const textItems2 = textContent2.items.map(item => item.str);
@@ -249,13 +246,13 @@
       fileReader.readAsArrayBuffer(file);
     });
 
-    // Génération et téléchargement du PDF en mode paysage
+    // Génération et téléchargement du PDF en mode paysage sur une seule page
     document.getElementById("download-pdf").addEventListener("click", function () {
       const opt = {
-        margin: 0.5,
+        margin: 0.2,  // marge réduite pour maximiser l'espace
         filename: pdfFilename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: { scale: 1.5 },  // réduction du scale pour diminuer la taille globale
         jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
       };
       const element = document.getElementById("pdf-content");
