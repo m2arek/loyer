@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Nouvelle Page PDF – Simulation sur 20 ans</title>
+  <title>– Simulation sur 20 ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap; /* Pour garder chiffres et € sur une seule ligne */
+      white-space: nowrap; /* Pour garder chiffres et € sur une même ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -125,21 +125,26 @@
       });
     }
 
-    // Fonction pour nettoyer les tokens (fusionner le nombre et le symbole €)
+    // Fonction pour nettoyer les tokens en fusionnant le nombre et le symbole €
     function cleanTokens(tokens) {
       return tokens.map(t => t.replace(/\s*€\s*/, "€").trim());
     }
 
-    // Réorganiser une ligne extraite dans le nouvel ordre souhaité.
-    // Si la première valeur contient "totaux" (même fragmentée), on la force à "Totaux".
+    // Fonction pour réassembler une ligne en réordonnant les colonnes selon le nouvel ordre.
+    // Pour la ligne Totaux, si la dernière colonne (cumul économies) est absente, on la fixe en utilisant Total économies.
     function reassembleRow(tokens, financementValue, rowIndex) {
-      // Vérifier si la première cellule correspond à Totaux
       if(tokens[0].toLowerCase().includes("totaux")) {
         tokens[0] = "Totaux";
-        // Pour la ligne Totaux, on renvoie les tokens tels quels en ajoutant deux colonnes vides
-        return [...tokens, "", ""];
+        // Si on a déjà au moins 9 tokens, on prend les 9 premières
+        if(tokens.length >= 9) {
+          return tokens.slice(0, 9);
+        } else {
+          // Sinon, on ajoute la colonne manquante : on utilise Total économies comme valeur pour Cumul économies
+          let totalEconomies = tokens[6] || "0€";
+          return [...tokens, "", totalEconomies];
+        }
       } else {
-        // Pour une ligne de données normale
+        // Ligne de données normale
         let totalEconomies = tokens[6] || tokens[7] || "0€";
         let financement = "";
         let cumul = "";
@@ -163,14 +168,17 @@
       }
     }
 
-    // Construire dynamiquement le corps du tableau
+    // Fonction pour construire dynamiquement le corps du tableau
     function buildTableBody(rowsArray, financementValue) {
       const tbody = document.querySelector("#simulation-table tbody");
       tbody.innerHTML = ""; // Vider le corps du tableau
       rowsArray.forEach((rowText, index) => {
-        rowText = rowText.replace(/(\d)\s*€/g, "$1€"); // Fusionner nombre et €
+        // Fusionner nombre et symbole €
+        rowText = rowText.replace(/(\d)\s*€/g, "$1€");
+        // Découper la ligne en tokens par espaces
         let tokens = rowText.split(/\s+/);
         tokens = cleanTokens(tokens);
+        // On considère une ligne valide si elle a au moins 7 tokens ou contient "totaux"
         if(tokens.length >= 7 || tokens[0].toLowerCase().includes("totaux")) {
           const newRow = reassembleRow(tokens, financementValue, index);
           const tr = document.createElement("tr");
@@ -206,7 +214,7 @@
               document.querySelector("header h1").textContent = clientName;
               document.querySelector("header p").textContent = clientAddress;
               pdfFilename = `Plan de financement & ${clientName}.pdf`;
-              // Filtrer les lignes du tableau : celles qui commencent par un chiffre ou par "totaux"
+              // Filtrer les lignes du tableau : celles qui commencent par un chiffre ou contiennent "totaux"
               const tableRows = lines.filter(str => /^\d/.test(str) || str.toLowerCase().includes("totaux"));
               console.log("Lignes du tableau filtrées :", tableRows);
               return tableRows;
