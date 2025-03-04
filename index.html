@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title> ans</title>
+  <title>Nouvelle Page PDF – Simulation sur 20 ans</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,7 +25,7 @@
       width: 100%;
     }
     #pdf-content {
-      margin: 60px 20px 60px 20px;
+      margin: 60px 20px 60px 20px; /* espace pour header et footer */
     }
     table {
       width: 100%;
@@ -39,7 +39,7 @@
     th, td {
       padding: 8px;
       text-align: center;
-      white-space: nowrap;
+      white-space: nowrap; /* Pour garder chiffres et € sur une seule ligne */
     }
     th {
       background-color: #f2f2f2;
@@ -109,7 +109,6 @@
     function groupItemsByY(items, tolerance = 2) {
       const lines = [];
       items.forEach(item => {
-        // Utilisation de item.transform[5] qui correspond généralement à la coordonnée y
         const y = item.transform[5];
         let line = lines.find(l => Math.abs(l.y - y) < tolerance);
         if (!line) {
@@ -120,31 +119,27 @@
       });
       // Trier les lignes par y décroissant (les lignes en haut d'abord)
       lines.sort((a, b) => b.y - a.y);
-      // Pour chaque ligne, trier les items par x (transform[4])
       return lines.map(line => {
         line.items.sort((a, b) => a.transform[4] - b.transform[4]);
-        // Concaténer le texte de chaque item séparé par un espace
         return line.items.map(it => it.str).join(" ").trim();
       });
     }
 
-    // Nettoyer les tokens pour fusionner nombre et symbole €
+    // Fonction pour nettoyer les tokens (fusionner le nombre et le symbole €)
     function cleanTokens(tokens) {
       return tokens.map(t => t.replace(/\s*€\s*/, "€").trim());
     }
 
     // Réorganiser une ligne extraite dans le nouvel ordre souhaité.
-    // Ici, nous supposons que l'ordre extrait initialement est :
-    // [Année, Facture Sans PV, Économies, Autoconso, Gains, Prime, Facture Avec PV, Total économies, ...]
-    // et que nous voulons obtenir :
-    // [Année, Facture Sans PV, Économies, Gains Revente (issu d'Autoconso), Prime (année 2) (issu de Gains), Facture Avec PV (issu de Prime), Total économies, Financement, Cumul économies]
+    // Si la première valeur contient "totaux" (même fragmentée), on la force à "Totaux".
     function reassembleRow(tokens, financementValue, rowIndex) {
-      // Si la ligne correspond aux totaux, on renvoie la ligne avec deux colonnes vides ajoutées
-      if(tokens[0].toLowerCase().startsWith("totaux")) {
+      // Vérifier si la première cellule correspond à Totaux
+      if(tokens[0].toLowerCase().includes("totaux")) {
+        tokens[0] = "Totaux";
+        // Pour la ligne Totaux, on renvoie les tokens tels quels en ajoutant deux colonnes vides
         return [...tokens, "", ""];
       } else {
-        // On attend au moins 7 tokens pour une ligne de données
-        // Vous devrez adapter cette logique en fonction de l'ordre exact dans votre PDF.
+        // Pour une ligne de données normale
         let totalEconomies = tokens[6] || tokens[7] || "0€";
         let financement = "";
         let cumul = "";
@@ -168,17 +163,15 @@
       }
     }
 
-    // Construction dynamique du corps du tableau
+    // Construire dynamiquement le corps du tableau
     function buildTableBody(rowsArray, financementValue) {
       const tbody = document.querySelector("#simulation-table tbody");
-      tbody.innerHTML = ""; // vider le corps du tableau
+      tbody.innerHTML = ""; // Vider le corps du tableau
       rowsArray.forEach((rowText, index) => {
-        // Fusionner nombre et symbole €
-        rowText = rowText.replace(/(\d)\s*€/g, "$1€");
-        // Découper la ligne en tokens par espaces
+        rowText = rowText.replace(/(\d)\s*€/g, "$1€"); // Fusionner nombre et €
         let tokens = rowText.split(/\s+/);
         tokens = cleanTokens(tokens);
-        if(tokens.length >= 7 || tokens[0].toLowerCase().startsWith("totaux")) {
+        if(tokens.length >= 7 || tokens[0].toLowerCase().includes("totaux")) {
           const newRow = reassembleRow(tokens, financementValue, index);
           const tr = document.createElement("tr");
           newRow.forEach(cellText => {
@@ -205,17 +198,16 @@
           // Extraction de la page 1 pour les infos client et le tableau
           pdf.getPage(1).then(function(page1) {
             return page1.getTextContent().then(function(textContent) {
-              // Regrouper les items par ligne selon leur coordonnée y
               const lines = groupItemsByY(textContent.items);
               console.log("Lignes extraites de la page 1 :", lines);
-              // Les deux premières lignes sont supposées contenir le nom et l'adresse du client
+              // Les deux premières lignes servent pour le nom et l'adresse du client
               const clientName = lines[0] ? lines[0].trim() : "Nom du client";
               const clientAddress = lines[1] ? lines[1].trim() : "Adresse du client";
               document.querySelector("header h1").textContent = clientName;
               document.querySelector("header p").textContent = clientAddress;
               pdfFilename = `Plan de financement & ${clientName}.pdf`;
-              // Les lignes du tableau sont celles qui commencent par un chiffre ou par "Totaux"
-              const tableRows = lines.filter(str => /^\d/.test(str) || str.toLowerCase().startsWith("totaux"));
+              // Filtrer les lignes du tableau : celles qui commencent par un chiffre ou par "totaux"
+              const tableRows = lines.filter(str => /^\d/.test(str) || str.toLowerCase().includes("totaux"));
               console.log("Lignes du tableau filtrées :", tableRows);
               return tableRows;
             });
@@ -235,7 +227,7 @@
                 }
                 const financementValue = (installationCost * 1.837 / 100 * 12).toFixed(2);
                 buildTableBody(tableRows, financementValue);
-                // Afficher le contenu et le bouton de téléchargement
+                // Afficher le contenu généré et le bouton de téléchargement
                 document.getElementById("pdf-content").style.display = "block";
                 document.getElementById("download-pdf").style.display = "inline-block";
               });
